@@ -1,14 +1,20 @@
-package com.github.if3110_31.simple_blog;
+package com.github.if3110_31.simple_blog.model;
 
 import java.io.Serializable;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+
+import com.github.if3110_31.simple_blog.SHA512;
 
 /**
  * User class, represents the Transfer Object of the User
  * 
- * 
  * @author Alvin Natawiguna
  *
  */
+@ManagedBean(name = "UserBean")
+@SessionScoped
 public class User implements Serializable {
 	/**
 	 * 

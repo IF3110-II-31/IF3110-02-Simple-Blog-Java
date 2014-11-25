@@ -1,12 +1,14 @@
 package com.github.if3110_31.simple_blog.db;
 
 import java.util.Collection;
+
 import javax.sql.RowSet;
+
 import java.sql.*;
 
 import static com.github.if3110_31.simple_blog.db.DAOUtil.*;
 
-import com.github.if3110_31.simple_blog.User;
+import com.github.if3110_31.simple_blog.model.User;
 
 /**
  * Implementation of the UserDAO interface

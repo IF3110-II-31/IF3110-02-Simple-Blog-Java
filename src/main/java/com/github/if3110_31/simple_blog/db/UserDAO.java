@@ -1,9 +1,10 @@
 package com.github.if3110_31.simple_blog.db;
 
 import java.util.Collection;
+
 import javax.sql.RowSet;
 
-import com.github.if3110_31.simple_blog.User;
+import com.github.if3110_31.simple_blog.model.User;
 
 /**
  * The interface for accessing user in the DB
@@ -39,7 +40,7 @@ public interface UserDAO {
 	 * 
 	 * @param user the {@link User} object
 	 * @return true if update succeeds, false if otherwise
-	 * @throws DAOException
+	 * @throws IllegalArgumentException, DAOException
 	 */
 	public void create(User user) throws IllegalArgumentException, DAOException;
 	
@@ -49,7 +50,7 @@ public interface UserDAO {
 	 * 
 	 * @param user the {@link User} object
 	 * @return true if update succeeds, false if otherwise
-	 * @throws DAOException
+	 * @throws IllegalArgumentException, DAOException
 	 */
 	public void update(User user) throws IllegalArgumentException, DAOException;
 	
@@ -60,7 +61,7 @@ public interface UserDAO {
 	 * @param user the {@link User} object
 	 * @param newPasswordHash new password hash
 	 * @return true if update succeeds, false if otherwise
-	 * @throws DAOException
+	 * @throws IllegalArgumentException, DAOException
 	 */
 	public void changePassword(User user, String newPasswordHash) throws IllegalArgumentException, DAOException;
 	
@@ -70,7 +71,7 @@ public interface UserDAO {
 	 * 
 	 * @param user the {@link User} object
 	 * @return true if update succeeds, false if otherwise
-	 * @throws DAOException
+	 * @throws IllegalArgumentException, DAOException
 	 */
 	public void delete(User user) throws IllegalArgumentException, DAOException;
 	
