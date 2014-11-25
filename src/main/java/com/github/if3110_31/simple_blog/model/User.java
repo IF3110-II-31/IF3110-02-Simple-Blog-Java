@@ -2,9 +2,6 @@ package com.github.if3110_31.simple_blog.model;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-
 import com.github.if3110_31.simple_blog.SHA512;
 
 /**
@@ -13,8 +10,6 @@ import com.github.if3110_31.simple_blog.SHA512;
  * @author Alvin Natawiguna
  *
  */
-@ManagedBean(name = "UserBean")
-@SessionScoped
 public class User implements Serializable {
 	/**
 	 * 

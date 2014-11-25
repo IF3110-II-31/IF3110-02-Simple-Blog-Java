@@ -25,7 +25,7 @@ public final class DAOUtil {
 	
 	public static void setValues(PreparedStatement ps, Object...values) throws SQLException {
 		for(int i = 0; i < values.length; i++) {
-			ps.setObject(i, values[i]);
+			ps.setObject(i+1, values[i]);
 		}
 	}
 	

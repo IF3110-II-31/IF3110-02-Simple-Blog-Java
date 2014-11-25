@@ -18,7 +18,7 @@ public class SHA512 {
 			final MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
 			
 			sha512.update(textToHash.getBytes());
-			return convertByteToHex(textToHash.getBytes());
+			return convertByteToHex(sha512.digest());
 		} catch (NoSuchAlgorithmException e) {
 			return null;
 		}
