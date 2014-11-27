@@ -18,13 +18,11 @@ import com.github.if3110_31.simple_blog.model.User.Role;
  * @author Alvin Natawiguna
  *
  */
-@WebFilter(filterName = "UserFilter", urlPatterns = {"*.xhtml", "*.jsf", "*.faces"})
+@WebFilter(filterName = "UserFilter", urlPatterns = {"*.xhtml"})
 public class UserFilter implements Filter {
 	//TODO: need to fix these URLs, match with the others
 	private static final String adminURL[] = {
-		"user.xhtml?action=list", 
-		"user.xhtml?action=delete",
-		"user.xhtml?action=add"
+		"userList.xhtml"
 	};
 	
 	private static final String ownerURL[] = {
@@ -39,12 +37,12 @@ public class UserFilter implements Filter {
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+			FilterChain chain) throws IOException, ServletException 
+	{
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse resp = (HttpServletResponse) response;
 		HttpSession session = req.getSession(false);

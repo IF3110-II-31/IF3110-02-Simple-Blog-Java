@@ -3,21 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:f="http://java.sun.com/jsf/core">
 
-<f:view>
 <ui:composition template="/WEB-INF/templates/BasicTemplate.xhtml">
     <ui:define name="content">
-        <h:form>
-            <h:panelGrid columns="2" rendered="#{!userManager.isLoggedIn()}">
-                <h:outputText value="Name"></h:outputText>
-                <h:inputText value="#{userManager.username}"></h:inputText>
-                <h:outputText value="Password"></h:outputText>
-                <h:inputSecret value="#{userManager.password}"></h:inputSecret>
-            </h:panelGrid>
-            <h:commandButton value="Login" action="#{userManager.login}" rendered="#{!userManager.isLoggedIn()}" />
-        </h:form>
+    <article class="art simple post" style="margin-top:3em;">
+    	<div class="art-body">
+    		<div class="art-body-inner">
+    			<h2 style="margin-bottom: 2em;">Login</h2>
+    			<div class="contact-area">
+			        <h:form rendered="#{!userManager.isLoggedIn()}">
+			            <label for="Username">Name</label>
+			            <input type="text" id="Username" name="username" value="#{userManager.username}"></input>
+			            <label for="Password">Password</label>
+			            <input type="password" id="Password" name="password" value="#{userManager.password}"></input>
+			            
+			        	<h:commandButton class="submit-button" value="Login" action="#{userManager.login}"/>
+			        </h:form>
+		        </div>
+	        </div>
+        </div>
+    </article>
     </ui:define>
 </ui:composition>
-</f:view>
 </html>

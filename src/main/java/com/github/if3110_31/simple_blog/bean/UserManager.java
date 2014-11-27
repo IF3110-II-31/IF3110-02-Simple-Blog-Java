@@ -1,7 +1,11 @@
 package com.github.if3110_31.simple_blog.bean;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.*;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
@@ -11,7 +15,12 @@ import com.github.if3110_31.simple_blog.model.User;
 
 @ManagedBean(name = "userManager")
 @SessionScoped
-public class UserManager {
+public class UserManager implements Serializable {
+	/**
+	 * Serial Version UID
+	 */
+	private static final long serialVersionUID = 1998717464534180478L;
+	
 	private User user;
 	private UserDAO userDao = DAOFactory.getInstance("simple-blog").getUserDAO();
 
@@ -19,6 +28,7 @@ public class UserManager {
 	 * the username
 	 */
 	private String username;
+	
 	/**
 	 * password in cleartext, not hashed
 	 */
@@ -28,12 +38,12 @@ public class UserManager {
 		this.username = username;
 	}
 	
-	public String getUsername() {
-		return username;
-	}
-	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 	
 	public String getPassword() {
@@ -41,7 +51,7 @@ public class UserManager {
 	}
 	
 	public boolean isLoggedIn() {
-		return user != null;
+		return BeanUtil.getSession().getAttribute("userId") != null;
 	}
 	
 	/**
@@ -51,20 +61,29 @@ public class UserManager {
 	public String login() {
 		String retval;
 		
-		System.err.println(SHA512.hashText(password));
-		
-		user = userDao.find(username, SHA512.hashText(password));
-		if(user != null) {
-			// set session, redirect to home, clear password & username?
-			HttpSession session = BeanUtil.getSession();
-			session.setAttribute("userId", user.getId());
-			session.setAttribute("userName", user.getUsername());
-			session.setAttribute("userRole", user.getRoleId());
-			
-			retval = "index";
+		if(!isLoggedIn()) {
+			user = userDao.find(username, SHA512.hashText(password));
+			if(user != null) {
+				// set session, redirect to home, clear password & username?
+				HttpSession session = BeanUtil.getSession();
+				
+				session.setAttribute("userId", user.getId());
+				session.setAttribute("userName", user.getName());
+				session.setAttribute("userEmail", user.getEmail());
+				session.setAttribute("userRole", user.getRoleId());
+				
+				// throw away
+				username = null;
+				password = null;
+				user = null;
+				
+				retval = "index";
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Your username or password isn't valid"));
+				retval = "login";
+			}
 		} else {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Your username or password isn't valid"));
-			retval = "login";
+			retval = "index";
 		}
 		
 		return retval;
@@ -75,10 +94,16 @@ public class UserManager {
 	 * @return destination
 	 */
 	public String logout() {
-		HttpSession session = BeanUtil.getSession();
-		session.invalidate();
+		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		ec.invalidateSession();
 		
 		// redirect to home
-		return "index";
+		try {
+			ec.redirect(ec.getRequestContextPath() + "/index.xhtml");
+		} catch (IOException e) {
+			// quietly
+		}
+		
+		return "index.xhtml";
 	}
 }

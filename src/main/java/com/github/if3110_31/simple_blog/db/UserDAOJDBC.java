@@ -1,9 +1,13 @@
 package com.github.if3110_31.simple_blog.db;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.sql.RowSet;
+import com.sun.rowset.CachedRowSetImpl;
 
+import javax.sql.rowset.CachedRowSet;
+
+import java.io.Serializable;
 import java.sql.*;
 
 import static com.github.if3110_31.simple_blog.db.DAOUtil.*;
@@ -12,12 +16,17 @@ import com.github.if3110_31.simple_blog.model.User;
 
 /**
  * Implementation of the UserDAO interface
+ * Based on UserDAOJDBC at {@link http://balusc.blogspot.com/2008/07/dao-tutorial-data-layer.html}
  * 
- * @link http://balusc.blogspot.com/2008/07/dao-tutorial-data-layer.html
  * @author Alvin Natawiguna
  *
  */
-public class UserDAOJDBC implements UserDAO {
+public class UserDAOJDBC implements UserDAO, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private DAOFactory daoFactory;
 	
 	UserDAOJDBC(DAOFactory daoFactory) {
@@ -25,14 +34,14 @@ public class UserDAOJDBC implements UserDAO {
 	}
 
 	@Override
-	public User find(int id) throws DAOException {
+	public User find(Long id) throws DAOException {
 		String sql = "SELECT * FROM user WHERE id=?";
 		return find(sql, id);
 	}
 
 	@Override
 	public User find(String name) throws DAOException {
-		String sql = "SELECT * FROM user WHERE name=?";
+		String sql = "SELECT * FROM user WHERE name LIKE %?%";
 		return find(sql, name);
 	}
 
@@ -74,9 +83,10 @@ public class UserDAOJDBC implements UserDAO {
 		User user = new User();
 		
 		user.setId(rs.getLong("id"));
-		user.setUsername(rs.getString("name"));
+		user.setName(rs.getString("name"));
 		user.setRole(User.Role.getRole(rs.getInt("roleId")));
 		user.setPassword(rs.getString("password"));
+		user.setEmail(rs.getString("email"));
 		
 		return user;
 	}
@@ -90,10 +100,11 @@ public class UserDAOJDBC implements UserDAO {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         
-        String sql = "INSERT INTO user (name, password, roleId) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO user (name, email, password, roleId) VALUES (?, ?, ?, ?)";
         
         Object values[] = {
-        	user.getUsername(),
+        	user.getName(),
+        	user.getEmail(),
         	user.getPassword(),
         	user.getRoleId()
         };
@@ -108,7 +119,7 @@ public class UserDAOJDBC implements UserDAO {
             
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if(generatedKeys.next()) {
-            	user.setId(generatedKeys.getLong("id"));
+            	user.setId(generatedKeys.getLong(1));
             } else {
             	throw new DAOException("User creation failed. No keys generated");
             }
@@ -129,12 +140,18 @@ public class UserDAOJDBC implements UserDAO {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		
-		String sql = "UPDATE user SET role=? WHERE id=?";
+		String sql = "UPDATE user SET name=?, email=?, roleId=? WHERE id=?";
 		
 		Object[] values = {
+			user.getName(),
+			user.getEmail(),
 			user.getRoleId(),
 			user.getId()
 		};
+		
+		for(Object v: values) {
+			System.out.println("[DEBUG] value: " + v);
+		}
 		
 		try {
 			connection = daoFactory.getConnection();
@@ -157,40 +174,58 @@ public class UserDAOJDBC implements UserDAO {
 			throw new IllegalArgumentException("User not defined: the ID is null");
 		}
 		
+		delete(user.getId());
+	}
+
+	@SuppressWarnings("restriction")
+	@Override
+	public CachedRowSet selectUserAsRowSet() throws DAOException {
+		String sql = "SELECT * FROM user";
+		
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		
-		String sql = "DELETE FROM user WHERE id=?";
-		
-		Object[] values = {
-			user.getId()
-		};
+		ResultSet resultSet = null;
+		CachedRowSet rowSet = null; // NOTE: this is not suitable for large data
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = prepareStatement(connection, sql, false, values);
-			
-			int affectedRows = preparedStatement.executeUpdate();
-			if(affectedRows == 0) {
-				throw new DAOException("User deletion failed. No rows affected.");
-			}
+			preparedStatement = connection.prepareStatement(sql);
+			resultSet = preparedStatement.executeQuery();
+			rowSet = new CachedRowSetImpl();
+			rowSet.populate(resultSet);
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		} finally {
-			close(connection, preparedStatement);
+			close(connection, preparedStatement, resultSet);
 		}
-	}
-
-	@Override
-	public RowSet selectUserAsRowSet() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return rowSet;
 	}
 
 	@Override
 	public Collection<User> selectUserAsCollection() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "SELECT * FROM user";
+		
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		Collection<User> userCollection = null; // NOTE: this is not suitable for large data
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = connection.prepareStatement(sql);
+			resultSet = preparedStatement.executeQuery();
+			userCollection = new ArrayList<>();
+			
+			while(resultSet.next())
+				userCollection.add(map(resultSet));
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			close(connection, preparedStatement, resultSet);
+		}
+		
+		return userCollection;
 	}
 
 	@Override
@@ -233,6 +268,32 @@ public class UserDAOJDBC implements UserDAO {
 				}
 			} else {
 				throw new DAOException("Changing password failed. Old password does not match.");
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			close(connection, preparedStatement);
+		}
+	}
+
+	@Override
+	public void delete(Long id) throws DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		
+		String sql = "DELETE FROM user WHERE id=?";
+		
+		Object[] values = {
+			id
+		};
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = prepareStatement(connection, sql, false, values);
+			
+			int affectedRows = preparedStatement.executeUpdate();
+			if(affectedRows == 0) {
+				throw new DAOException("User deletion failed. No rows affected.");
 			}
 		} catch (SQLException e) {
 			throw new DAOException(e);

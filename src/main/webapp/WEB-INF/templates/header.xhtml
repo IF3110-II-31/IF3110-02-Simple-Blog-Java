@@ -2,13 +2,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
 
 <nav class="nav">
-    <a style="border:none;" id="logo" href="index.html"><h1>Simple<span>-</span>Blog</h1></a>
+    <a style="border:none;" id="logo" href="#{request.contextPath}/index.xhtml"><h1>Simple<span>-</span>Blog</h1></a>
+    
     <ul class="nav-primary">
-        <li><a href="new_post.html">+ Tambah Post</a></li>
+    	<h:form rendered="#{not userManager.isLoggedIn()}">
+    		<li><h:inputText value="#{userManager.username}" p:placeholder="User name"></h:inputText></li>
+    		<li><h:inputSecret value="#{userManager.password}" p:placeholder="Password"></h:inputSecret></li>
+    		<li><h:commandButton value="Login" action="#{userManager.login}" /></li>
+    	</h:form>
+    	<ui:fragment rendered="#{userManager.isLoggedIn()}">
+    		<li><a href="#{request.contextPath}/newPost.xhtml">+ Tambah Post</a></li>
+    		<li>
+	    		<h:form>
+	    		<h:commandLink class="submit-button" value="Logout" action="#{userManager.logout()}" />
+	    		</h:form>
+    		</li>
+    	</ui:fragment>
     </ul>
 </nav>
 

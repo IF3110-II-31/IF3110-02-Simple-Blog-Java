@@ -29,7 +29,7 @@ public class User implements Serializable {
 		
 		private String description;
 		
-		Role(int id, String description) {
+		private Role(int id, String description) {
 			this.id = id;
 			this.description = description;
 		}
@@ -42,7 +42,7 @@ public class User implements Serializable {
 			return description;
 		}
 		
-		public static Role getRole(int id) {
+		public static Role getRole(int id) throws RoleException {
 			Role role;
 			
 			switch(id) {
@@ -56,7 +56,7 @@ public class User implements Serializable {
 				role = EDITOR;
 				break;
 			default:
-				role = null;
+				throw new RoleException("Unknown roleId: " + id);
 			}
 			
 			return role;
@@ -65,9 +65,11 @@ public class User implements Serializable {
 	
 	private Long id;
 	
-	private String username;
+	private String name;
 	
 	private String password;
+	
+	private String email;
 	
 	private Role role;
 	
@@ -79,12 +81,21 @@ public class User implements Serializable {
 		return id;
 	}
 	
-	public String getUsername() {
-		return username;
+	public String getEmail() {
+		return email;
 	}
 	
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		// TODO: validation
+		this.email = email;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String username) {
+		this.name = username;
 	}
 	
 	public String getPassword() {
@@ -97,6 +108,14 @@ public class User implements Serializable {
 	
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	
+	public void setRole(int id) throws RoleException {
+		this.role = Role.getRole(id);
+	}
+	
+	public Role getRole() {
+		return role;
 	}
 	
 	public int getRoleId() {
@@ -135,7 +154,7 @@ public class User implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("User[id=%d,username=%s,role=%s]", 
-            id, username, role.getDescription());
+        return String.format("User[id=%d,username=%s,email=%s,role=%s]", 
+            id, name, email, role.getDescription());
     }
 }

@@ -10,14 +10,6 @@
   <!-- File Mapping -->
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>*.jsf</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>*.faces</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.xhtml</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -31,10 +23,22 @@
     <param-value>.xhtml</param-value>
   </context-param>
 
+  <!-- Project Stage -->
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+  </context-param>
+
   <!-- Welcome page -->
   <welcome-file-list>
 	<welcome-file>faces/index.xhtml</welcome-file>
   </welcome-file-list>
+
+  <!-- Handling empty strings -->
+  <context-param>
+        <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+        <param-value>true</param-value>
+  </context-param>
 
   <context-param>
     <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
