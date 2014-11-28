@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    
+<h:head>
+    <link rel="stylesheet" type="text/css" href="resource\css\screen.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="img\favicon.ico" />
+    <meta charset="utf-8" />
+    <title>Simple Blog | Apa itu Simple Blog?</title>
+</h:head>
+
+
+<h:body class="default" onload="show_comment(2)">
+    <div class="wrapper">
+
+<nav class="nav">
+    <a style="border:none;" id="logo" href="index.php"><h1>Simple<span>-</span>Blog</h1></a>
+    <ul class="nav-primary">
+        <li><a href="new_post.php">+ Tambah Post</a></li>
+    </ul>
+</nav>
+
+<article class="art simple post">
+    
+    <header class="art-header">
+        <div class="art-header-inner" style="margin-top: 0px; opacity: 1;">
+            <c:forEach items="#{requestBean.ShowDetailPost()}" />
+            <time class="art-time"><h:outputText value="#{requestBean.tanggalToBeShow}" /></time> 
+            <h2 class="art-title"><h:outputText value="#{requestBean.judulToBeShow}" /></h2> 
+            <p class="art-subtitle"></p>
+        </div>
+    </header>
+
+    <div class="art-body">
+        <div class="art-body-inner">
+            <hr class="featured-article" />
+            <p><h:outputText value="#{requestBean.kontenToBeShow}" /></p> 
+            <hr/>
+            
+            <h2>Komentar</h2>
+
+            <div id="contact-area">
+                <h:form id="komen">
+                    <label for="Nama">Nama:</label>
+                    <h:inputText id="Nama" value="#{requestBean.commentator}"/>
+        
+                    <label for="Email">Email:</label>
+                    <h:inputText id="Email" value="#{requestBean.email}"/>
+                    
+                    <label for="Komentar">Komentar:</label><br />
+                    
+                    <h:inputTextarea rows="20" cols="20" id="Komentar" value="#{requestBean.comment_content}"/>
+                    <h:commandButton  value="Add Comment" id="comment" action="#{requestBean.addcomment()}" onclick="return validate_comment()" />
+                </h:form>
+                <span id="error" style="color:red;"></span>
+                <span id="errorEmail" style="color:red;"></span>
+            </div>
+            <c:forEach items="#{requestBean.retrieveListKomen()}" var="p">
+            <ul  class="art-list-body">
+                    <div class="art-list-item-title-and-time">
+                        <h2 class="art-list-title">
+                           #{p.commentator}
+                        </h2>
+                        <span style="font-size:10px;">#{p.email}</span>
+                    </div>
+                    <p>#{p.comment_content}</p>
+            </ul>
+            </c:forEach>
+        </div>
+    </div>
+
+</article>
+
+<footer class="footer">
+    <div class="back-to-top"><a href="">Back to top</a></div>
+    <aside class="offsite-links">
+        Asisten IF3110 /
+        <a class="rss-link" href="#rss">RSS</a> /
+        <br/>
+        <a class="twitter-link" href="http://twitter.com/YoGiiSinaga">Yogi</a> /
+        <a class="twitter-link" href="http://twitter.com/sonnylazuardi">Sonny</a> /
+        <a class="twitter-link" href="http://twitter.com/fathanpranaya">Fathan</a> /
+        <br/>
+        <a class="twitter-link" href="#">Renusa</a> /
+        <a class="twitter-link" href="#">Kelvin</a> /
+        <a class="twitter-link" href="#">Yanuar</a> /
+        
+    </aside>
+</footer>
+
+</div>
+<script type="text/javascript" src="assets/js/ajax.js" />
+<script type="text/javascript" src="assets/js/fittext.js" />
+<script type="text/javascript" src="assets/js/app.js" />
+<script type="text/javascript" src="assets/js/respond.min.js" />
+<script type="text/javascript" src="resource/js/function.js"></script>
+</h:body>
+</html>
+
