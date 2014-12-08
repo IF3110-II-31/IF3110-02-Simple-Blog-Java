@@ -1,5 +1,6 @@
 package com.github.if3110_31.simple_blog.db;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -84,6 +85,10 @@ public abstract class DAOFactory {
         return new UserDAOJDBC(this);
     }
 
+	public UserSessionDAO getUserSessionDAO() {
+		return new UserSessionDAOJDBC(this);
+	}
+
     // You can add more DAO implementation getters here.
 
 }
@@ -93,8 +98,15 @@ public abstract class DAOFactory {
 /**
  * The DriverManager based DAOFactory.
  */
-class DriverManagerDAOFactory extends DAOFactory {
-    private String url;
+class DriverManagerDAOFactory extends DAOFactory
+	implements Serializable
+{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5480611620023482666L;
+	
+	private String url;
     private String username;
     private String password;
 
@@ -113,8 +125,14 @@ class DriverManagerDAOFactory extends DAOFactory {
 /**
  * The DataSource based DAOFactory.
  */
-class DataSourceDAOFactory extends DAOFactory {
-    private DataSource dataSource;
+class DataSourceDAOFactory extends DAOFactory
+	implements Serializable
+{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6973003936332221303L;
+	private DataSource dataSource;
 
     DataSourceDAOFactory(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -129,8 +147,15 @@ class DataSourceDAOFactory extends DAOFactory {
 /**
  * The DataSource-with-Login based DAOFactory.
  */
-class DataSourceWithLoginDAOFactory extends DAOFactory {
-    private DataSource dataSource;
+class DataSourceWithLoginDAOFactory extends DAOFactory
+	implements Serializable
+{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3555029620985247626L;
+	
+	private DataSource dataSource;
     private String username;
     private String password;
 

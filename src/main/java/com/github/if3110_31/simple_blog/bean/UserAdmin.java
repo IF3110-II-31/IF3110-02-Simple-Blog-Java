@@ -52,9 +52,9 @@ public class UserAdmin implements Serializable {
 	
 	@PostConstruct
 	public void init() {
-		userList = dao.selectUserAsCollection();
-		userEditId = null;
+		refresh();
 		
+		userEditId = null;
 		userAdd = null;
 	}
 	
@@ -70,6 +70,14 @@ public class UserAdmin implements Serializable {
 		return userAdd;
 	}
 	
+	public String getOldPasswordHash() {
+		return oldPasswordHash;
+	}
+
+	public void setOldPasswordHash(String oldPasswordHash) {
+		this.oldPasswordHash = oldPasswordHash;
+	}
+
 	public String editAction(Long id) {
 		userEditId = id;
 		
@@ -112,7 +120,7 @@ public class UserAdmin implements Serializable {
 	}
 	
 	public String deleteUser(Long id) {
-		HttpSession session = BeanUtil.getSession();
+		HttpSession session = BeanUtil.getSession(false);
 		
 		if(session.getAttribute("userId") != null) {
 			Long currentUserId = (Long)session.getAttribute("userId");

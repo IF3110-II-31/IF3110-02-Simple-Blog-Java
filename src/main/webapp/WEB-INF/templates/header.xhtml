@@ -13,7 +13,8 @@
     	<h:form rendered="#{not userManager.isLoggedIn()}">
     		<li><h:inputText value="#{userManager.username}" p:placeholder="User name"></h:inputText></li>
     		<li><h:inputSecret value="#{userManager.password}" p:placeholder="Password"></h:inputSecret></li>
-    		<li><h:commandButton value="Login" action="#{userManager.login}" /></li>
+    		<li><h:selectBooleanCheckbox value="#{userManager.remember}">Remember me</h:selectBooleanCheckbox></li>
+    		<li><h:commandButton value="Login" action="#{userManager.login(false)}" /></li>
     	</h:form>
     	<ui:fragment rendered="#{userManager.isLoggedIn()}">
     		<li><a href="#{request.contextPath}/newPost.xhtml">+ Tambah Post</a></li>
